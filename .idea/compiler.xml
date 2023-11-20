@@ -7,8 +7,18 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="odd-rpc-admin" />
+<<<<<<< HEAD
         <module name="odd-rpc-core" />
         <module name="odd-rpc-samples" />
+=======
+        <module name="odd-rpc-sample-frameless-server" />
+        <module name="odd-rpc-sample-springboot-server" />
+        <module name="odd-rpc-sample-frameless-client" />
+        <module name="odd-rpc-sample-frameless-api" />
+        <module name="odd-rpc-core" />
+        <module name="odd-rpc-sample-springboot-client" />
+        <module name="odd-rpc-sample-springboot-api" />
+>>>>>>> 9a4178b (2023-11-25)
       </profile>
     </annotationProcessing>
   </component>
