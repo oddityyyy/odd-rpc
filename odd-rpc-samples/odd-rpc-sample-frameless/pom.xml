@@ -11,6 +11,7 @@
 
     <artifactId>odd-rpc-sample-frameless</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>odd-rpc-sample-frameless-client</module>
         <module>odd-rpc-sample-frameless-api</module>

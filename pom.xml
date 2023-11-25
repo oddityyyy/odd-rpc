@@ -3,33 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-<<<<<<< HEAD
-    <groupId>com.oddity</groupId>
-=======
     <groupId>com.oddityyyy</groupId>
->>>>>>> 9a4178b (2023-11-25)
     <artifactId>odd-rpc</artifactId>
-    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
     <description>A high performance, distributed RPC framework.</description>
-<<<<<<< HEAD
-    <url>https://github.com/oddityyyy</url>
-=======
     <url>https://github.com/oddityyyy/</url>
->>>>>>> 9a4178b (2023-11-25)
 
     <modules>
         <module>odd-rpc-core</module>
         <module>odd-rpc-admin</module>
         <module>odd-rpc-samples</module>
-<<<<<<< HEAD
-        <module>odd-rpc-admin</module>
-        <module>odd-rpc-core</module>
-        <module>odd-rpc-samples</module>
-=======
->>>>>>> 9a4178b (2023-11-25)
     </modules>
 
     <properties>

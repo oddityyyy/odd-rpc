@@ -11,6 +11,7 @@
 
     <artifactId>odd-rpc-sample-springboot</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>odd-rpc-sample-springboot-api</module>
         <module>odd-rpc-sample-springboot-client</module>
