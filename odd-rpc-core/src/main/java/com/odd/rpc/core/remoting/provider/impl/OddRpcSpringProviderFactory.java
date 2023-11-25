@@ -30,7 +30,7 @@ public class OddRpcSpringProviderFactory extends OddRpcProviderFactory implement
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
-        // 获取带有 `@XxlRpcService` 注解的 Bean 对象(serviceBean才是真正具体的实现类)，这些 Bean 对象是需要发布为 RPC 服务的对象
+        // 获取带有 `@XxlRpcService` 注解的 Bean 对象(serviceBean才是真正具体的实现类/和抽象出来的RpcReferenceBean对标)，这些 Bean 对象是需要发布为 RPC 服务的对象
         // key为Bean的名称（类名小写形式）
         Map<String, Object> serviceBeanMap = applicationContext.getBeansWithAnnotation(OddRpcService.class);
         if (serviceBeanMap != null && serviceBeanMap.size() > 0){

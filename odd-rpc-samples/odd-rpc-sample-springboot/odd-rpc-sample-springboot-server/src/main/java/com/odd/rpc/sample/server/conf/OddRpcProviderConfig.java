@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * 初始化 SpringProviderFactory
+ *
  * @author oddity
  * @create 2023-11-20 18:04
  */
