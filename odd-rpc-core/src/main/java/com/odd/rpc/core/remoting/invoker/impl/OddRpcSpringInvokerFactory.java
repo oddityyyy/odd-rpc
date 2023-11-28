@@ -2,6 +2,8 @@ package com.odd.rpc.core.remoting.invoker.impl;
 
 import com.odd.rpc.core.registry.Register;
 import com.odd.rpc.core.remoting.invoker.OddRpcInvokerFactory;
+import com.odd.rpc.core.remoting.invoker.annotaion.OddRpcReference;
+import com.odd.rpc.core.util.OddRpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -10,8 +12,12 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * odd-rpc invoker factory, init service-registry and spring-bean by annotation (for spring)
@@ -68,7 +74,30 @@ public class OddRpcSpringInvokerFactory implements InitializingBean, DisposableB
      * @throws BeansException
      */
     @Override
-    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+    public boolean postProcessAfterInstantiation(final Object bean, final String beanName) throws BeansException {
+
+        // collection
+        final Set<String> serviceKeyList = new HashSet<>();
+
+        // parse OddRpcReferenceBean
+        ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
+            @Override
+            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+                if (field.isAnnotationPresent(OddRpcReference.class)){
+                    //valid
+                    Class iface = field.getType();
+                    if (!iface.isInterface()){
+                        throw new OddRpcException("odd-rpc, reference(OddRpcReference) must be interface.");
+                    }
+
+                    OddRpcReference rpcReference = field.getAnnotation(OddRpcReference.class);
+
+                    //init referenceBean
+                    new OddRpcReferenceBean();
+                }
+            }
+        });
+
         return InstantiationAwareBeanPostProcessor.super.postProcessAfterInstantiation(bean, beanName);
     }
 
