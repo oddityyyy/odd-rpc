@@ -58,7 +58,7 @@ public class OddRpcSpringProviderFactory extends OddRpcProviderFactory implement
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        //启动ProviderFactory
+        //启动ProviderFactory (服务注册)
         super.start();
     }
 

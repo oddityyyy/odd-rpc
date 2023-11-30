@@ -20,6 +20,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @create 2023-11-24 21:41
  */
 public class NettyServerHandler extends SimpleChannelInboundHandler<OddRpcRequest> {
+
     private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
 
     private OddRpcProviderFactory oddRpcProviderFactory;
@@ -66,6 +67,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<OddRpcReques
         ctx.close();
     }
 
+    /**
+     * 客户端保证了保活机制，若仍然trigger, 则客户端已死idle，就关闭channel
+     *
+     * @param ctx
+     * @param evt
+     * @throws Exception
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent){

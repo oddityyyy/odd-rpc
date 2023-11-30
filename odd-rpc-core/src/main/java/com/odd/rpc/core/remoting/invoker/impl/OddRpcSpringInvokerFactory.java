@@ -3,6 +3,8 @@ package com.odd.rpc.core.remoting.invoker.impl;
 import com.odd.rpc.core.registry.Register;
 import com.odd.rpc.core.remoting.invoker.OddRpcInvokerFactory;
 import com.odd.rpc.core.remoting.invoker.annotaion.OddRpcReference;
+import com.odd.rpc.core.remoting.invoker.reference.OddRpcReferenceBean;
+import com.odd.rpc.core.remoting.provider.OddRpcProviderFactory;
 import com.odd.rpc.core.util.OddRpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +81,7 @@ public class OddRpcSpringInvokerFactory implements InitializingBean, DisposableB
         // collection
         final Set<String> serviceKeyList = new HashSet<>();
 
+        // 循环遍历所有被`@OddRpcReference` 注解标记的字段
         // parse OddRpcReferenceBean
         ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
             @Override
@@ -93,24 +96,65 @@ public class OddRpcSpringInvokerFactory implements InitializingBean, DisposableB
                     OddRpcReference rpcReference = field.getAnnotation(OddRpcReference.class);
 
                     //init referenceBean
-                    new OddRpcReferenceBean();
+                    OddRpcReferenceBean referenceBean = new OddRpcReferenceBean();
+                    referenceBean.setClient(rpcReference.client());
+                    referenceBean.setSerializer(rpcReference.serializer());
+                    referenceBean.setCallType(rpcReference.callType());
+                    referenceBean.setLoadBalance(rpcReference.loadBalance());
+                    referenceBean.setIface(iface);
+                    referenceBean.setVersion(rpcReference.version());
+                    referenceBean.setTimeout(rpcReference.timeout());
+                    referenceBean.setAddress(rpcReference.address());
+                    referenceBean.setAccessToken(rpcReference.accessToken());
+                    referenceBean.setInvokeCallback(null);
+                    referenceBean.setInvokerFactory(oddRpcInvokerFactory);
+                    
+                    //get proxyObj
+                    Object serviceProxy = null;
+                    try {
+                        serviceProxy = referenceBean.getObject();
+                    } catch (Exception e) {
+                        throw new OddRpcException(e);
+                    }
+
+                    // set bean
+                    field.setAccessible(true);
+                    field.set(bean, serviceProxy);
+
+                    logger.info(">>>>>>>>>>> odd-rpc, invoker factory init reference bean success. serviceKey = {}, bean.field = {}.{}",
+                            OddRpcProviderFactory.makeServiceKey(iface.getName(), rpcReference.version()), beanName, field.getName());
+
+                    // collection
+                    String serviceKey = OddRpcProviderFactory.makeServiceKey(iface.getName(), rpcReference.version());
+                    serviceKeyList.add(serviceKey);
                 }
             }
         });
 
-        return InstantiationAwareBeanPostProcessor.super.postProcessAfterInstantiation(bean, beanName);
+        // multi discovery （服务发现）
+        if (oddRpcInvokerFactory.getRegister() != null){
+            try {
+                oddRpcInvokerFactory.getRegister().discovery(serviceKeyList);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        return true;
     }
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-
-    }
-
+    //在 Bean 销毁时被调用
     @Override
     public void destroy() throws Exception {
-
+        // stop invoker factory
+        oddRpcInvokerFactory.stop();
     }
 
+    private BeanFactory beanFactory;
 
-
+    // `BeanFactoryAware` 接口的实现，用于获取 Spring 的 `BeanFactory`
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 }

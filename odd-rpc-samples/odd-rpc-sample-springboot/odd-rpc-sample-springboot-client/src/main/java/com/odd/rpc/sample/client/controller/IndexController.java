@@ -1,5 +1,6 @@
 package com.odd.rpc.sample.client.controller;
 
+import com.odd.rpc.core.remoting.invoker.annotaion.OddRpcReference;
 import com.odd.rpc.core.remoting.provider.annotation.OddRpcService;
 import com.odd.rpc.sample.api.DemoService;
 import com.odd.rpc.sample.api.dto.UserDTO;

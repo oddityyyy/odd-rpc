@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
+ * application registry
+ *
  * @author oddity
  * @create 2023-11-23 19:56
  */
@@ -24,7 +26,7 @@ public abstract class Register {
     /**
      * registry service, for mult
      *
-     * @param keys  service key 多个服务
+     * @param keys  service key 多个服务 （key = iface + version）
      * @param value service key 一台机器
      * @return
      */

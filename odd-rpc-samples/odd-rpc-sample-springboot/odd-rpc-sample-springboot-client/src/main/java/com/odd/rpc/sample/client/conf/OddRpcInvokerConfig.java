@@ -1,5 +1,6 @@
 package com.odd.rpc.sample.client.conf;
 
+import com.odd.rpc.core.registry.impl.OddRpcAdminRegister;
 import com.odd.rpc.core.remoting.invoker.OddRpcInvokerFactory;
 import com.odd.rpc.core.remoting.invoker.impl.OddRpcSpringInvokerFactory;
 import org.slf4j.Logger;
@@ -7,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
 
 /**
  * odd-rpc invoker config
@@ -29,7 +32,15 @@ public class OddRpcInvokerConfig {
 
     @Bean
     public OddRpcSpringInvokerFactory oddRpcSpringInvokerFactory(){
-        OddRpcSpringInvokerFactory invokerFactory = new OddRpcSpringInvokerFactory();
 
+        OddRpcSpringInvokerFactory invokerFactory = new OddRpcSpringInvokerFactory();
+        invokerFactory.setServiceRegistryClass(OddRpcAdminRegister.class);
+        invokerFactory.setServiceRegistryParam(new HashMap<String, String>(){{
+            put(OddRpcAdminRegister.ADMIN_ADDRESS, address);
+            put(OddRpcAdminRegister.ENV, env);
+        }});
+
+        logger.info(">>>>>>>>>>> odd-rpc invoker config init finish.");
+        return invokerFactory;
     }
 }

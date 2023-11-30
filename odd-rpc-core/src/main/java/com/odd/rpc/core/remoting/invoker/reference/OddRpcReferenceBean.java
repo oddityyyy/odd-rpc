@@ -3,12 +3,14 @@ package com.odd.rpc.core.remoting.invoker.reference;
 import com.odd.rpc.core.remoting.invoker.OddRpcInvokerFactory;
 import com.odd.rpc.core.remoting.invoker.call.CallType;
 import com.odd.rpc.core.remoting.invoker.call.OddRpcInvokeCallback;
+import com.odd.rpc.core.remoting.invoker.call.OddRpcInvokerFuture;
 import com.odd.rpc.core.remoting.invoker.generic.OddRpcGenericService;
 import com.odd.rpc.core.remoting.invoker.route.LoadBalance;
 import com.odd.rpc.core.remoting.net.Client;
 import com.odd.rpc.core.remoting.net.impl.netty.client.NettyClient;
 import com.odd.rpc.core.remoting.net.params.OddRpcFutureResponse;
 import com.odd.rpc.core.remoting.net.params.OddRpcRequest;
+import com.odd.rpc.core.remoting.net.params.OddRpcResponse;
 import com.odd.rpc.core.remoting.provider.OddRpcProviderFactory;
 import com.odd.rpc.core.serialize.Serializer;
 import com.odd.rpc.core.serialize.impl.HessianSerializer;
@@ -22,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * rpc reference bean, use by api
@@ -218,7 +221,7 @@ public class OddRpcReferenceBean {
                         OddRpcRequest oddRpcRequest = new OddRpcRequest();
                         oddRpcRequest.setRequestId(UUID.randomUUID().toString());
                         oddRpcRequest.setCreateMillisTime(System.currentTimeMillis());
-                        OddRpcRequest.setAccessToken(accessToken);
+                        oddRpcRequest.setAccessToken(accessToken);
                         oddRpcRequest.setClassName(className);
                         oddRpcRequest.setMethodName(methodName);
                         oddRpcRequest.setParameterTypes(parameterTypes);
@@ -230,6 +233,80 @@ public class OddRpcReferenceBean {
                         if (CallType.SYNC == callType){
                             // future-response set
                             OddRpcFutureResponse futureResponse = new OddRpcFutureResponse(invokerFactory, oddRpcRequest, null);
+
+                            try {
+                                // do invoke
+                                clientInstance.asyncSend(finalAddress, oddRpcRequest);
+
+                                // future get
+                                OddRpcResponse oddRpcResponse = futureResponse.get(timeout, TimeUnit.MILLISECONDS);
+                                if (oddRpcResponse.getErrorMsg() != null){
+                                    throw new OddRpcException(oddRpcResponse.getErrorMsg());
+                                }
+                                return oddRpcResponse.getResult();
+                            } catch (Exception e) {
+                                logger.info(">>>>>>>>>>> odd-rpc, invoke error, address:{}, XxlRpcRequest{}", finalAddress, oddRpcRequest);
+
+                                throw (e instanceof OddRpcException) ? e : new OddRpcException(e);
+                            } finally {
+                                //双重保证
+                                //调用完以后必删除，和Netty-rpc思路一致 ("一次一密""一次一个UUID(requestId)")
+                                // future-response remove
+                                futureResponse.removeInvokerFuture();
+                            }
+                        }else if (CallType.FUTURE == callType){
+                            // 在异步调用中（CallType.FUTURE），创建一个 OddRpcInvokeFuture 对象，并将未来的响应设置为异步发送请求的结果
+                            // future-response set
+                            OddRpcFutureResponse futureResponse = new OddRpcFutureResponse(invokerFactory, oddRpcRequest, null);
+                            try {
+                                // invoke future set
+                                OddRpcInvokerFuture invokeFuture = new OddRpcInvokerFuture(futureResponse);
+                                OddRpcInvokerFuture.setFuture(invokeFuture);
+
+                                // do invoke
+                                clientInstance.asyncSend(finalAddress, oddRpcRequest);
+
+                                return null;
+                            } catch (Exception e) {
+                                logger.info(">>>>>>>>>>> odd-rpc, invoke error, address:{}, OddRpcRequest{}", finalAddress, oddRpcRequest);
+
+                                // future-response remove
+                                futureResponse.removeInvokerFuture();
+
+                                throw (e instanceof OddRpcException) ? e : new OddRpcException(e);
+                            }
+                        }else if (CallType.CALLBACK == callType){
+                            // 对于回调类型（CallType.CALLBACK）, 获取回调对象 finalInvokeCallback，并在异步发送请求之后执行回调
+                            // get callback
+                            OddRpcInvokeCallback finalInvokeCallback = invokeCallback;
+                            OddRpcInvokeCallback threadInvokeCallback = OddRpcInvokeCallback.getCallback();
+                            if (threadInvokeCallback != null) {
+                                finalInvokeCallback = threadInvokeCallback;
+                            }
+                            if (finalInvokeCallback == null) {
+                                throw new OddRpcException("odd-rpc OddRpcInvokeCallback（CallType="+ CallType.CALLBACK.name() +"） cannot be null.");
+                            }
+
+                            // future-response set
+                            OddRpcFutureResponse futureResponse = new OddRpcFutureResponse(invokerFactory, oddRpcRequest, finalInvokeCallback);
+                            try {
+                                clientInstance.asyncSend(finalAddress, oddRpcRequest);
+                            } catch (Exception e) {
+                                logger.info(">>>>>>>>>>> odd-rpc, invoke error, address:{}, OddRpcRequest{}", finalAddress, oddRpcRequest);
+
+                                // future-response remove
+                                futureResponse.removeInvokerFuture();
+
+                                throw (e instanceof OddRpcException) ? e : new OddRpcException(e);
+                            }
+
+                            return null;
+                        } else if (CallType.ONEWAY == callType){
+                            // 对于单向调用（CallType.ONEWAY），直接异步发送请求，无需等待返回结果
+                            clientInstance.asyncSend(finalAddress, oddRpcRequest);
+                            return null;
+                        } else {
+                            throw new OddRpcException("odd-rpc callType[" + callType + "] invalid");
                         }
                     }
                 });

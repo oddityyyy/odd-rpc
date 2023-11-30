@@ -7,16 +7,18 @@ import com.odd.rpc.core.remoting.net.params.OddRpcRequest;
 /**
  * netty client
  *
+ * 对ConnectClient的上层封装
+ *
  * @author oddity
  * @create 2023-11-25 22:54
  */
 public class NettyClient extends Client {
 
-    private Class<? extends ConnectClient>
+    private Class<? extends ConnectClient> connectClientImpl = NettyConnectClient.class;
 
     @Override
     public void asyncSend(String address, OddRpcRequest oddRpcRequest) throws Exception {
-
+        ConnectClient.asyncSend(oddRpcRequest, address, connectClientImpl, oddRpcReferenceBean);
     }
 
 }

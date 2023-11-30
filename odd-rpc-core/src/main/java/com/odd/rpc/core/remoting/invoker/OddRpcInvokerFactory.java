@@ -131,7 +131,7 @@ public class OddRpcInvokerFactory {
             futureResponse.setResponse(oddRpcResponse);
         }
 
-        //调用完以后必删除，和Netty-rpc思路一致
+        //调用完以后必删除，和Netty-rpc思路一致 ("一次一密""一次一个UUID(requestId)")
         // do remove
         futureResponsePool.remove(requestId);
     }

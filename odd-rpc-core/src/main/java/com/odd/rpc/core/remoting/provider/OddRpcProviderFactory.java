@@ -21,6 +21,7 @@ import java.util.Map;
 
 /**
  * 生产者基础工厂类
+ *
  * @author oddity
  * @create 2023-11-23 15:39
  */
@@ -139,7 +140,6 @@ public class OddRpcProviderFactory {
 
         // start server(NettyServer default)
         serverInstance = server.newInstance();
-        //TODO 注册相关逻辑完善
         serverInstance.setStartedCallback(new BaseCallback() { // serviceRegistry started
             @Override
             public void run() throws Exception {
@@ -154,7 +154,6 @@ public class OddRpcProviderFactory {
                 }
             }
         });
-        //TODO 注册相关逻辑完善
         serverInstance.setStopedCallback(new BaseCallback() { // serviceRegistry stoped
             @Override
             public void run() {
