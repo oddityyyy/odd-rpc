@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.odd.rpc.admin.dao.IOddRpcRegistryMessageDao">
+
+    <resultMap id="oddRpcRegistryMessage" type="com.odd.rpc.admin.core.model.OddRpcRegistryMessage" >
+        <result column="id" property="id" />
+        <result column="type" property="type" />
+        <result column="data" property="data" />
+        <result column="addTime" property="addTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        t.`id`,
+		t.`type`,
+		t.`data`,
+		t.`addTime`
+    </sql>
+
+    <insert id="add" parameterType="com.odd.rpc.admin.core.model.OddRpcRegistryMessage" >
+        INSERT INTO odd_rpc_registry_message (
+            `type`,
+            `data`,
+            `addTime`
+        ) VALUES
+            (
+                #{oddRpcRegistryMessage.type},
+                #{oddRpcRegistryMessage.data},
+                NOW()
+            )
+    </insert>
+
+    <select id="findMessage" parameterType="java.util.HashMap" resultMap="oddRpcRegistryMessage" >
+        SELECT <include refid="Base_Column_List" />
+        FROM odd_rpc_registry_message AS t
+        <if test="excludeIds != null and excludeIds.size() > 0" >
+            where t.id not in
+            <foreach collection="excludeIds" item="idItem"  index="index" separator="," open="(" close=")">
+                #{idItem}
+            </foreach>
+        </if>
+        ORDER BY t.id ASC
+    </select>
+
+    <delete id="cleanMessage" parameterType="java.util.HashMap" >
+        DELETE FROM odd_rpc_registry_message
+        WHERE NOW() <![CDATA[ > ]]> DATE_ADD(addTime, Interval #{messageTimeout} SECOND)
+    </delete>
+</mapper>

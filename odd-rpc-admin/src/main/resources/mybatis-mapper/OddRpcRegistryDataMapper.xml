@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.odd.rpc.admin.dao.IOddRpcRegistryDataDao">
+
+    <resultMap id="oddRpcRegistryData" type="com.odd.rpc.admin.core.model.OddRpcRegistryData" >
+        <result column="id" property="id" />
+        <result column="env" property="env" />
+        <result column="key" property="key" />
+        <result column="value" property="value" />
+        <result column="updateTime" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        t.`id`,
+		t.`env`,
+		t.`key`,
+		t.`value`,
+		t.`updateTime`
+    </sql>
+
+    <update id="refresh" parameterType="com.odd.rpc.admin.core.model.OddRpcRegistryData"  >
+        UPDATE odd_rpc_registry_data AS t
+        SET
+            t.`updateTime` = now()
+        WHERE t.`env` = #{oddRpcRegistryData.env}
+          and t.`key` = #{oddRpcRegistryData.key}
+          and t.`value` = #{oddRpcRegistryData.value}
+    </update>
+
+    <insert id="add" parameterType="com.odd.rpc.admin.core.model.OddRpcRegistryData" >
+        INSERT INTO odd_rpc_registry_data (
+            `env`,
+            `key`,
+            `value`,
+            `updateTime`
+        ) VALUES
+            (
+                #{oddRpcRegistryData.env},
+                #{oddRpcRegistryData.key},
+                #{oddRpcRegistryData.value},
+                now()
+            )
+    </insert>
+
+    <select id="findData" parameterType="java.util.HashMap" resultMap="oddRpcRegistryData">
+        SELECT <include refid="Base_Column_List" />
+        FROM odd_rpc_registry_data AS t
+        where t.env = #{env}
+        and t.key = #{key}
+        ORDER BY t.value ASC
+    </select>
+
+    <!-- 超时删除 -->
+    <delete id="cleanData" parameterType="java.util.HashMap" >
+        DELETE FROM odd_rpc_registry_data
+        WHERE NOW() <![CDATA[ > ]]> DATE_ADD(updateTime, Interval #{timeout} SECOND)
+    </delete>
+
+    <delete id="deleteData" parameterType="java.util.HashMap" >
+        DELETE FROM odd_rpc_registry_data
+        WHERE `env` = #{env}
+          and `key` = #{key}
+    </delete>
+
+    <delete id="deleteDataValue" parameterType="java.util.HashMap" >
+        DELETE FROM odd_rpc_registry_data
+        WHERE `env` = #{env}
+          and `key` = #{key}
+          and `value` = #{value}
+    </delete>
+
+    <select id="count" resultType="java.lang.Integer" >
+        SELECT count(1)
+        FROM odd_rpc_registry_data
+    </select>
+
+</mapper>
