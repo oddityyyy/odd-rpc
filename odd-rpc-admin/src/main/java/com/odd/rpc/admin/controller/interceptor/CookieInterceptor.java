@@ -1,5 +1,6 @@
 package com.odd.rpc.admin.controller.interceptor;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -14,6 +15,7 @@ import java.util.HashMap;
  * @author oddity
  * @create 2023-12-02 1:54
  */
+@Component
 public class CookieInterceptor implements AsyncHandlerInterceptor {
 
     @Override

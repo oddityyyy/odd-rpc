@@ -181,7 +181,7 @@ public class OddRpcProviderFactory {
 
     /**
      * init local rpc service map
-     * key: serviceKey(xxlRpcRequest.getClassName() + xxlRpcRequest.getVersion())
+     * key: serviceKey(oddRpcRequest.getClassName() + oddRpcRequest.getVersion())
      * value: serviceBean
      */
     private Map<String, Object> serviceData = new HashMap<String, Object>();

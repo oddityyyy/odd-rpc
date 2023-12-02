@@ -73,7 +73,7 @@
             <version>${mysql-connector-java.version}</version>
         </dependency>
 
-        <!-- xxl-rpc-core -->
+        <!-- odd-rpc-core -->
         <dependency>
             <groupId>com.oddityyyy</groupId>
             <artifactId>odd-rpc-core</artifactId>

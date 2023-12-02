@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.Map;
 
 /**
- * xxl-rpc provider (for spring)
+ * odd-rpc provider (for spring)
  * 这个类主要作用是在 Spring 环境中管理 RPC 服务提供者，
  * 通过扫描带有 `@XxlRpcService` 注解的 Bean，将其注册到 RPC 服务工厂中，
  * 并在 Spring 容器启动和关闭时分别启动和停止 RPC 服务提供者。

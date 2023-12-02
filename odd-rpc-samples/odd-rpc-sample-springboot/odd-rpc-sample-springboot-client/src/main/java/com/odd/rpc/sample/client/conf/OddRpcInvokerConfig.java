@@ -1,7 +1,6 @@
 package com.odd.rpc.sample.client.conf;
 
 import com.odd.rpc.core.registry.impl.OddRpcAdminRegister;
-import com.odd.rpc.core.remoting.invoker.OddRpcInvokerFactory;
 import com.odd.rpc.core.remoting.invoker.impl.OddRpcSpringInvokerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

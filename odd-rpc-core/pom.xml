@@ -18,7 +18,7 @@
 
     <dependencies>
 
-        <!-- ********************** net + serialize + registry (default = netty + hessian + xxl-rpc-admin/registry) ********************** -->
+        <!-- ********************** net + serialize + registry (default = netty + hessian + odd-rpc-admin/registry) ********************** -->
         <!-- netty -->
         <dependency>
             <groupId>io.netty</groupId>

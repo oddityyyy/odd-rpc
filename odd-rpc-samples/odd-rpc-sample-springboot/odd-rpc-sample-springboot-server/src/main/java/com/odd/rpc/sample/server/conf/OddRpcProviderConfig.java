@@ -1,5 +1,6 @@
 package com.odd.rpc.sample.server.conf;
 
+import com.odd.rpc.core.registry.impl.OddRpcAdminRegister;
 import com.odd.rpc.core.remoting.net.impl.netty.server.NettyServer;
 import com.odd.rpc.core.remoting.provider.OddRpcProviderFactory;
 import com.odd.rpc.core.remoting.provider.impl.OddRpcSpringProviderFactory;
@@ -9,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
 
 /**
  * 初始化 SpringProviderFactory
@@ -35,7 +38,7 @@ public class OddRpcProviderConfig {
     @Bean
     public OddRpcSpringProviderFactory oddRpcSpringProviderFactory() {
 
-        OddRpcProviderFactory providerFactory = new OddRpcProviderFactory();
+        OddRpcSpringProviderFactory providerFactory = new OddRpcSpringProviderFactory();
         providerFactory.setServer(NettyServer.class);
         providerFactory.setSerializer(HessianSerializer.class);
         providerFactory.setCorePoolSize(-1); //默认60
@@ -43,7 +46,13 @@ public class OddRpcProviderConfig {
         providerFactory.setIp(null);         //默认本机地址
         providerFactory.setPort(port);       //默认7080
         providerFactory.setAccessToken(null);//默认空
-        providerFactory.setServiceRegistry();
+        providerFactory.setServiceRegistry(OddRpcAdminRegister.class);
+        providerFactory.setServiceRegistryParam(new HashMap<String, String>(){{
+            put(OddRpcAdminRegister.ADMIN_ADDRESS, address);
+            put(OddRpcAdminRegister.ENV, env);
+        }});
 
+        logger.info(">>>>>>>>>>> odd-rpc provider config init finish.");
+        return providerFactory;
     }
 }

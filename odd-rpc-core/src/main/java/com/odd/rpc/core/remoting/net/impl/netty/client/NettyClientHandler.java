@@ -52,7 +52,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<OddRpcRespon
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent){
             /*ctx.channel().close();      // close idle channel
-			logger.debug(">>>>>>>>>>> xxl-rpc netty client close an idle channel.");*/
+			logger.debug(">>>>>>>>>>> odd-rpc netty client close an idle channel.");*/
 
             //如果连接处于空闲状态，通过发送心跳消息来维持连接的有效性，并且记录了发送了心跳消息的日志
             nettyConnectClient.send(Beat.BEAT_PING); // beat N, close if fail(may throw error)

@@ -73,7 +73,7 @@
                 #{oddRpcRegistry.env},
                 #{oddRpcRegistry.key},
                 #{oddRpcRegistry.data},
-                #{oodRpcRegistry.status}
+                #{oddRpcRegistry.status}
             )
     </insert>
 
