@@ -193,7 +193,7 @@ public class OddRpcAdminRegistryClient {
     public Map<String, TreeSet<String>> discovery(Set<String> keys){
         // valid
         if (keys == null || keys.size() == 0){
-            throw new OddRpcException("odd-rpc keys empty");
+            return null;
         }
 
         // find from local
@@ -273,7 +273,7 @@ public class OddRpcAdminRegistryClient {
             return null;
         }
 
-        Map<String, TreeSet<String>> keyValueSetTmp = discovery(new HashSet<>(Arrays.asList(key)));
+        Map<String, TreeSet<String>> keyValueSetTmp = discovery(new HashSet<String>(Arrays.asList(key)));
         if (keyValueSetTmp != null){
             return keyValueSetTmp.get(key);
         }

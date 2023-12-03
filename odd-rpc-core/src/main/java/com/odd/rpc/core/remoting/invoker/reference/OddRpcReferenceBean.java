@@ -3,7 +3,7 @@ package com.odd.rpc.core.remoting.invoker.reference;
 import com.odd.rpc.core.remoting.invoker.OddRpcInvokerFactory;
 import com.odd.rpc.core.remoting.invoker.call.CallType;
 import com.odd.rpc.core.remoting.invoker.call.OddRpcInvokeCallback;
-import com.odd.rpc.core.remoting.invoker.call.OddRpcInvokerFuture;
+import com.odd.rpc.core.remoting.invoker.call.OddRpcInvokeFuture;
 import com.odd.rpc.core.remoting.invoker.generic.OddRpcGenericService;
 import com.odd.rpc.core.remoting.invoker.route.LoadBalance;
 import com.odd.rpc.core.remoting.net.Client;
@@ -260,8 +260,8 @@ public class OddRpcReferenceBean {
                             OddRpcFutureResponse futureResponse = new OddRpcFutureResponse(invokerFactory, oddRpcRequest, null);
                             try {
                                 // invoke future set
-                                OddRpcInvokerFuture invokeFuture = new OddRpcInvokerFuture(futureResponse);
-                                OddRpcInvokerFuture.setFuture(invokeFuture);
+                                OddRpcInvokeFuture invokeFuture = new OddRpcInvokeFuture(futureResponse);
+                                OddRpcInvokeFuture.setFuture(invokeFuture);
 
                                 // do invoke
                                 clientInstance.asyncSend(finalAddress, oddRpcRequest);
