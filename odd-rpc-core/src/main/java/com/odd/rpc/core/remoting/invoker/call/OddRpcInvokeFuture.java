@@ -15,11 +15,11 @@ import java.util.concurrent.TimeoutException;
  * @author oddity
  * @create 2023-11-29 17:00
  */
-public class OddRpcInvokerFuture implements Future {
+public class OddRpcInvokeFuture implements Future {
 
     private OddRpcFutureResponse futureResponse;
 
-    public OddRpcInvokerFuture(OddRpcFutureResponse futureResponse) {
+    public OddRpcInvokeFuture(OddRpcFutureResponse futureResponse) {
         this.futureResponse = futureResponse;
     }
 
@@ -60,7 +60,7 @@ public class OddRpcInvokerFuture implements Future {
             if (oddRpcResponse.getErrorMsg() != null){
                 throw new OddRpcException(oddRpcResponse.getErrorMsg());
             }
-            return oddRpcResponse;
+            return oddRpcResponse.getResult();
         } finally {
             stop();
         }
@@ -69,7 +69,7 @@ public class OddRpcInvokerFuture implements Future {
 
     // ---------------------- thread invoke future ----------------------
 
-    private static ThreadLocal<OddRpcInvokerFuture> threadInvokerFuture = new ThreadLocal<OddRpcInvokerFuture>();
+    private static ThreadLocal<OddRpcInvokeFuture> threadInvokerFuture = new ThreadLocal<OddRpcInvokeFuture>();
 
     /**
      * get future
@@ -89,7 +89,7 @@ public class OddRpcInvokerFuture implements Future {
      *
      * @param future
      */
-    public static void setFuture(OddRpcInvokerFuture future){
+    public static void setFuture(OddRpcInvokeFuture future){
         threadInvokerFuture.set(future);
     }
 
