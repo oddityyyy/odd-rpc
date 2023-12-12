@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * odd-rpc provider (for spring)
  * 这个类主要作用是在 Spring 环境中管理 RPC 服务提供者，
- * 通过扫描带有 `@XxlRpcService` 注解的 Bean，将其注册到 RPC 服务工厂中，
+ * 通过扫描带有 `@OddRpcService` 注解的 Bean，将其注册到 RPC 服务工厂中，
  * 并在 Spring 容器启动和关闭时分别启动和停止 RPC 服务提供者。
  *
  * @author oddity
@@ -30,7 +30,7 @@ public class OddRpcSpringProviderFactory extends OddRpcProviderFactory implement
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
-        // 获取带有 `@XxlRpcService` 注解的 Bean 对象(serviceBean才是真正具体的实现类/和抽象出来的RpcReferenceBean对标)，这些 Bean 对象是需要发布为 RPC 服务的对象
+        // 获取带有 `@OddRpcService` 注解的 Bean 对象(serviceBean才是真正具体的实现类/和抽象出来的RpcReferenceBean对标)，这些 Bean 对象是需要发布为 RPC 服务的对象
         // key为Bean的名称（类名小写形式）
         Map<String, Object> serviceBeanMap = applicationContext.getBeansWithAnnotation(OddRpcService.class);
         if (serviceBeanMap != null && serviceBeanMap.size() > 0){
